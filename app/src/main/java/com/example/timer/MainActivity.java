@@ -1,0 +1,67 @@
+package com.example.timer;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.os.Bundle;
+import android.os.Handler;
+import android.view.View;
+import android.widget.TextView;
+
+import java.util.Locale;
+
+public class MainActivity extends AppCompatActivity {
+
+    private TextView textViewTimer; // переменная для доступа к тексту таймера
+    private int seconds = 0;
+    private boolean isRunning = false;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        textViewTimer = findViewById(R.id.textViewTimer);//присваем занчение
+
+        //метод runTimer начинает работать при создании данной активности, поэтому мы вызываем его в этом методе 
+        runTimer();
+    }
+
+    public void onClickStartTimer(View view) {
+        isRunning = true;
+    }
+
+    public void inClickPauseTimer(View view) {
+        isRunning = false;
+    }
+
+
+    public void onClickResetTimer(View view) {
+        isRunning = false;
+        seconds = 0;
+    }
+
+    private void runTimer() {
+        final Handler handler = new Handler(); //создаем объект , его тип Handler
+        handler.post(new Runnable() { //у этого объекта вызываем метод post; метод post - как можно быстрее вызови данный код
+            @Override
+            //сейчас он вызывается один раз
+            public void run() {
+                int hours = seconds / 3600;
+                int minutes = (seconds % 3600) / 60;
+                int second = seconds % 60;
+
+                String time = String.format(Locale.getDefault(), "%d:%02d:%02d", hours, minutes, second); //преобюразовываем в строки
+                textViewTimer.setText(time); // прередаем текст равный времени
+
+                if (isRunning) {
+                    seconds++;
+                }
+                //вызываем его еще раз, но уже с задержкой в секунду? (говорим handler выполни этот метод еще раз )
+                handler.postDelayed(this, 1000); //в качесве первого параметра передаем объект Runnable - т.е. себя, втрой объект - задержка в мил.секундах - это 1000
+
+
+            }
+        });
+
+    }
+}
