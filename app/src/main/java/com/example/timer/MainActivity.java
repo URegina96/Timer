@@ -1,5 +1,6 @@
 package com.example.timer;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
@@ -19,13 +20,26 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         textViewTimer = findViewById(R.id.textViewTimer);//присваем занчение
 
-        //метод runTimer начинает работать при создании данной активности, поэтому мы вызываем его в этом методе 
+        if (savedInstanceState != null) {
+            //Теперь восстанавливаем наши значения
+            seconds = savedInstanceState.getInt("seconds");
+            isRunning = savedInstanceState.getBoolean("isRunning");
+        }
+
+        //метод runTimer начинает работать при создании данной активности, поэтому мы вызываем его в этом методе
         runTimer();
     }
 
+    //что бы сохранить текущее состояние активности метод:
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) { //Bundle позволяет объединить  разные типы данных в один объект, метод работает через сохранение данных (если проще говоря), при уничтожении активности и возвращает их при восстановлении активности
+        super.onSaveInstanceState(outState);
+        outState.putInt("seconds", seconds); //сохрняем наши значения
+        outState.putBoolean("isRunning", isRunning);
+    }
     public void onClickStartTimer(View view) {
         isRunning = true;
     }
@@ -33,13 +47,10 @@ public class MainActivity extends AppCompatActivity {
     public void inClickPauseTimer(View view) {
         isRunning = false;
     }
-
-
     public void onClickResetTimer(View view) {
         isRunning = false;
         seconds = 0;
     }
-
     private void runTimer() {
         final Handler handler = new Handler(); //создаем объект , его тип Handler
         handler.post(new Runnable() { //у этого объекта вызываем метод post; метод post - как можно быстрее вызови данный код
@@ -50,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
                 int minutes = (seconds % 3600) / 60;
                 int second = seconds % 60;
 
-                String time = String.format(Locale.getDefault(), "%d:%02d:%02d", hours, minutes, second); //преобюразовываем в строки
+                String time = String.format(Locale.getDefault(), "%d:%02d:%02d", hours, minutes, second); //преобразовываем в строки
                 textViewTimer.setText(time); // прередаем текст равный времени
 
                 if (isRunning) {
@@ -60,6 +71,5 @@ public class MainActivity extends AppCompatActivity {
                 handler.postDelayed(this, 1000); //в качесве первого параметра передаем объект Runnable - т.е. себя, втрой объект - задержка в мил.секундах - это 1000
             }
         });
-
     }
 }
