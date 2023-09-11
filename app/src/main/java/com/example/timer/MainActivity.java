@@ -15,6 +15,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView textViewTimer; // переменная для доступа к тексту таймера
     private int seconds = 0;
     private boolean isRunning = false;
+    private boolean wasRunning = false; //переменная , которая хранит состояние таймера до метода стоп
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,35 +23,52 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         textViewTimer = findViewById(R.id.textViewTimer);//присваем занчение
 
-        if (savedInstanceState != null) {
-            //Теперь восстанавливаем наши значения
+        if (savedInstanceState != null) {//Теперь восстанавливаем наши значения
             seconds = savedInstanceState.getInt("seconds");
             isRunning = savedInstanceState.getBoolean("isRunning");
+
+            wasRunning = savedInstanceState.getBoolean("wasRunning"); // восстанавливаем это значение , шаг четыре
         }
 
         //метод runTimer начинает работать при создании данной активности, поэтому мы вызываем его в этом методе
         runTimer();
     }
 
-    //что бы сохранить текущее состояние активности метод:
+    @Override
+    protected void onStop() { //метод для стопа, когда входящий звонок
+        super.onStop();
+        wasRunning = isRunning;
+        isRunning = false;
+    }
 
+    @Override
+    protected void onStart() { //метод, для запуска таймера после завершения вызова
+        super.onStart();
+        isRunning = wasRunning;
+    }
+
+    //что бы сохранить текущее состояние активности метод:
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) { //Bundle позволяет объединить  разные типы данных в один объект, метод работает через сохранение данных (если проще говоря), при уничтожении активности и возвращает их при восстановлении активности
         super.onSaveInstanceState(outState);
         outState.putInt("seconds", seconds); //сохрняем наши значения
         outState.putBoolean("isRunning", isRunning);
+
+        outState.putBoolean("wasRunning", wasRunning); //затем добавляем сюда переменную , шаг три
     }
+
     public void onClickStartTimer(View view) {
         isRunning = true;
     }
-
     public void inClickPauseTimer(View view) {
         isRunning = false;
     }
+
     public void onClickResetTimer(View view) {
         isRunning = false;
         seconds = 0;
     }
+
     private void runTimer() {
         final Handler handler = new Handler(); //создаем объект , его тип Handler
         handler.post(new Runnable() { //у этого объекта вызываем метод post; метод post - как можно быстрее вызови данный код
