@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
             seconds = savedInstanceState.getInt("seconds");
             isRunning = savedInstanceState.getBoolean("isRunning");
 
-            wasRunning = savedInstanceState.getBoolean("wasRunning"); // восстанавливаем это значение , шаг четыре
+            wasRunning = savedInstanceState.getBoolean("wasRunning"); // восстанавливаем это значение , шаг четыре к теме onResume
         }
 
         //метод runTimer начинает работать при создании данной активности, поэтому мы вызываем его в этом методе
@@ -35,17 +35,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStop() { //метод для стопа, когда входящий звонок
-        super.onStop();
+    protected void onPause() { //в этом методе реализовываю сохранение состояния таймера, а после его остановки
+        //вызывается тогда, когда активность видима, но фокус принадлежит другой активности
+        super.onPause();
         wasRunning = isRunning;
         isRunning = false;
     }
 
     @Override
-    protected void onStart() { //метод, для запуска таймера после завершения вызова
-        super.onStart();
+    protected void onResume() {//аналогичный код методу onStop
+        super.onResume();//вызывается непосредственно перед тем, когда активность начинает взаимодействовать с пользователем
         isRunning = wasRunning;
     }
+
+//    @Override
+//    protected void onPostResume() { //аналогичный код методу onStop
+//        //вызывается непосредственно перед тем, когда активность начинает взаимодействовать с пользователем
+//        super.onPostResume();
+//        isRunning = wasRunning;
+//    }
 
     //что бы сохранить текущее состояние активности метод:
     @Override
@@ -54,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
         outState.putInt("seconds", seconds); //сохрняем наши значения
         outState.putBoolean("isRunning", isRunning);
 
-        outState.putBoolean("wasRunning", wasRunning); //затем добавляем сюда переменную , шаг три
+        outState.putBoolean("wasRunning", wasRunning); //затем добавляем сюда переменную , шаг три к данной теме
     }
 
     public void onClickStartTimer(View view) {
