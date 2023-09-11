@@ -48,13 +48,6 @@ public class MainActivity extends AppCompatActivity {
         isRunning = wasRunning;
     }
 
-//    @Override
-//    protected void onPostResume() { //аналогичный код методу onStop
-//        //вызывается непосредственно перед тем, когда активность начинает взаимодействовать с пользователем
-//        super.onPostResume();
-//        isRunning = wasRunning;
-//    }
-
     //что бы сохранить текущее состояние активности метод:
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) { //Bundle позволяет объединить  разные типы данных в один объект, метод работает через сохранение данных (если проще говоря), при уничтожении активности и возвращает их при восстановлении активности
